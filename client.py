@@ -31,7 +31,7 @@ while True:
 	r = file.read(1024)
 	if not r: break
 	my_socket.send(r) #envia 1024 bytes lidos do arquivo para o servidor
-	print('\r{}% transferido.'.format(int(perc)), end='',)
+	print('\r{}% transferido.'.format(min(100, int(perc))), end='',)
 	perc += perc_per_iter	
 
 print('Arquivo tranferido!')
