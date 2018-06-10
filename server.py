@@ -13,15 +13,26 @@ while True:
     print("I started receiving a file, yey!")
     
     file_name = conn.recv(1024) #recebe o nome do arquivo
-    w = open(file_name.decode(), 'wb')
     conn.send("name-received".encode()) #envia a confirmacao de nome de arquivo recebido
+    file_size = int(conn.recv(1024).decode())
+    conn.send("size-received".encode())
+    w = open(file_name.decode(), 'wb')
     
+
+
+    if file_size > 0:
+      perc_per_iter = float(1024*100/file_size) # porcentagem de quanto é transferido por iteração
+    else:
+      perc_per_iter = 100
+    perc = perc_per_iter
     piece = conn.recv(1024) #recebe o primeiro pedaço do arquivo
     
     while piece:
-        w.write(piece)  
-        piece = conn.recv(1024) 
+        w.write(piece)
+        print('\r{}% recebido.'.format(min(100, int(perc))), end='',)
+        piece = conn.recv(1024)
+        perc += perc_per_iter 
     
-    print("Received " + file_name.decode() + " successfully.")
+    print("\nReceived " + file_name.decode() + " successfully.")
     w.close()
     conn.close()
